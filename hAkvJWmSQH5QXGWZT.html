@@ -1,0 +1,756 @@
+<html><head><base href="."><meta charset="UTF-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><title>ChibiDock</title><script src="https://cdn.tailwindcss.com"></script><style>
+:root {
+    --primary: #6366f1;
+    --bg-dark: #111827;
+    --bg-light: #f8fafc; /* Softer white background */
+    --card-dark: #1f2937;
+    --card-light: #ffffff;
+    --text-dark: #ffffff;
+    --text-light: #111827;
+    --manga-page-dark: #1f2937;
+    --manga-page-light: #f8fafc; /* Updated lighter background */
+}
+
+.theme-dark {
+    --bg: var(--bg-dark);
+    --card: var(--card-dark);
+    --text: var(--text-dark);
+    --manga-page: var(--manga-page-dark);
+    background-color: var(--bg);
+    color: var(--text);
+}
+
+.theme-light {
+    --bg: var(--bg-light);
+    --card: var(--card-light);
+    --text: var(--text-light);
+    --manga-page: var(--manga-page-light);
+    background-color: var(--bg);
+    color: var(--text);
+}
+
+.manga-page {
+    background: var(--manga-page);
+    max-width: 800px;
+    margin: 0 auto;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.manga-page:hover {
+    transform: scale(1.02);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.chapter-nav {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(17, 24, 39, 0.95);
+    padding: 12px 24px;
+    border-radius: 16px;
+    z-index: 1000;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.theme-light .chapter-nav {
+    background: rgba(255, 255, 255, 0.95);
+    color: #111827;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.nav-button {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-light .nav-button {
+    background: #f1f5f9;
+    color: #111827;
+}
+
+.nav-button:hover {
+    transform: scale(1.1);
+    background: var(--primary);
+}
+
+.theme-light .nav-button:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.sidebar {
+    background: var(--card);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    height: 100vh;
+    z-index: 50;
+}
+
+.theme-light .sidebar {
+    border-right: 1px solid #e5e7eb;
+}
+
+.sidebar.collapsed {
+    transform: translateX(-100%);
+}
+
+.progress-bar {
+    height: 3px;
+    background: var(--primary);
+    position: fixed;
+    top: 0;
+    left: 0;
+    transition: width 0.3s ease;
+    z-index: 100;
+}
+
+.sidebar-toggle-fixed {
+    position: fixed;
+    left: 20px;
+    top: 20px;
+    z-index: 60;
+    background: var(--card);
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.theme-light .settings-toggle,
+.theme-light .sidebar-toggle-fixed {
+    background: #ffffff;
+    color: #111827;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.theme-light .settings-toggle:hover,
+.theme-light .sidebar-toggle-fixed:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.sidebar-toggle-fixed.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.sidebar-toggle-fixed:hover {
+    background: var(--primary);
+    transform: scale(1.1);
+}
+
+.settings-panel {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--card);
+    border-radius: 12px;
+    padding: 16px;
+    z-index: 1000;
+    width: 300px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transform: translateY(-150%);
+    transition: transform 0.3s ease;
+}
+
+.theme-light .settings-panel {
+    background: #ffffff;
+    color: #111827;
+}
+
+.theme-light .chapter-nav select {
+    background: #f1f5f9;
+    color: #111827;
+    border-color: #e5e7eb;
+}
+
+.settings-panel.visible {
+    transform: translateY(0);
+}
+
+.settings-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1001;
+    background: var(--card);
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.settings-toggle:hover {
+    background: var(--primary);
+    transform: scale(1.1);
+}
+
+.manga-pages-webtoon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0 !important;
+}
+
+.manga-pages-webtoon .manga-page {
+    margin-bottom: 0 !important;
+}
+
+.manga-pages-rtl {
+    display: flex;
+    flex-direction: row-reverse;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 1.5rem;
+    padding: 1rem;
+    min-height: calc(100vh - 2rem);
+    align-items: center;
+}
+
+.manga-pages-rtl .manga-page {
+    scroll-snap-align: center;
+    flex: 0 0 auto;
+    width: auto; /* Remove fixed width */
+    max-width: min(800px, calc(100vw - 4rem)); /* Use max-width instead */
+    height: auto;
+    margin: 0 !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* Maintain same scale behavior as default mode */
+}
+
+.manga-pages-rtl .manga-page:hover {
+    transform: scale(1.02);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Ensure hover effect matches other modes */
+}
+
+.manga-pages-rtl .manga-page img {
+  width: 100%;
+  height: 100%;
+  max-width: 800px;
+  display: block;
+}
+
+.theme-light .sidebar .bg-gray-800 p,
+.theme-light .sidebar .bg-gray-100 p {
+    color: #111827; /* Dark text color for light mode */
+}
+</style></head><body class="theme-dark bg-gray-900">
+<div class="progress-bar" id="readingProgress"></div>
+
+<!-- Settings Toggle Button -->
+<button id="settingsToggle" class="settings-toggle text-white p-2 rounded-lg bg-gray-800 hover:bg-indigo-600 transition-colors">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+    </svg>
+</button>
+
+<!-- Settings Panel -->
+<div id="settingsPanel" class="settings-panel">
+    <h3 class="text-xl font-bold mb-4">Settings</h3>
+    
+    <!-- Theme Toggle -->
+    <div class="mb-4">
+        <label class="text-sm font-medium mb-2 block">Theme</label>
+        <select id="themeSelect" class="w-full px-3 py-2 rounded-lg">
+            <option value="system">System</option>
+            <option value="dark">Dark</option>
+            <option value="light">Light</option>
+        </select>
+    </div>
+
+    <!-- Reading Mode -->
+    <div class="mb-4">
+        <label class="text-sm font-medium mb-2 block">Reading Mode</label>
+        <select id="readingModeSelect" class="w-full px-3 py-2 rounded-lg">
+            <option value="scroll">Scroll (Default)</option>
+            <option value="webtoon">Webtoon</option>
+            <option value="ltr">Left to Right (Alpha)</option>
+            <option value="rtl">Right to Left (Alpha)</option>
+        </select>
+    </div>
+</div>
+
+<!-- Fixed Sidebar Toggle Button -->
+<button id="fixedSidebarToggle" class="sidebar-toggle-fixed text-white">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
+    </svg>
+</button>
+
+<div class="flex h-screen">
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar w-72 flex-shrink-0 overflow-y-auto">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center space-x-2">
+                    <h1 class="text-2xl font-bold text-white tracking-tight">ChibiDock</h1>
+                    <span class="text-xs bg-indigo-600 text-white px-2 py-1 rounded-md">v1.0.0</span>
+                </div>
+                <button id="toggleSidebar" class="text-white hover:text-indigo-400 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-6">
+                <div class="bg-gray-800 p-4 rounded-xl shadow-lg">
+                    <h2 class="text-white font-semibold mb-3">Currently Reading</h2>
+                    <p class="text-xl text-indigo-400 font-medium">One Piece</p>
+                    <p class="text-gray-400 text-sm mt-1">Chapter 1084</p>
+                </div>
+                <div class="space-y-3">
+                    <h3 class="text-gray-400 text-sm font-medium uppercase tracking-wider">Chapters</h3>
+                    <div class="space-y-2">
+                        <a href="https://example.com/chapter/1084" class="block text-white hover:bg-indigo-600 p-3 rounded-lg transition-colors">Chapter 1084</a>
+                        <a href="https://example.com/chapter/1083" class="block text-white hover:bg-indigo-600 p-3 rounded-lg transition-colors">Chapter 1083</a>
+                        <a href="https://example.com/chapter/1082" class="block text-white hover:bg-indigo-600 p-3 rounded-lg transition-colors">Chapter 1082</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 reader-container ml-72 overflow-y-auto" id="readerContainer">
+        <div class="p-6">
+            <div class="space-y-6" id="mangaPages">
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 1" class="w-full h-auto"> 
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 2" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 3" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 4" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 5" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 6" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 7" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 8" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 9" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 10" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 11" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 12" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 13" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 14" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 15" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 16" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 17" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 18" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 19" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 20" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 21" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 22" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 23" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 24" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 25" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 26" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 27" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 28" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 29" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 30" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 31" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 32" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 33" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 34" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 35" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 36" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 37" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 38" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 39" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 40" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 41" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 42" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 43" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 44" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 45" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 46" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 47" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 48" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 49" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 50" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 51" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 52" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 53" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 54" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 55" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 56" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 57" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 58" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 59" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 60" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 61" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 62" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 63" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 64" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 65" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 66" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 67" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 68" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 69" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 70" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 71" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 72" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 73" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 74" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 75" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 76" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 77" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 78" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 79" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 80" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 81" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 82" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 83" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 84" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 85" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 86" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 87" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 88" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 89" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="https://picsum.photos/800/1200" alt="Page 90" class="w-full h-auto">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="chapter-nav flex items-center space-x-4">
+    <button class="nav-button text-white px-4 py-2 rounded-lg bg-gray-800 hover:bg-indigo-600 transition-colors" id="prevButton">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+    </button>
+    
+    <select class="bg-gray-800 text-white px-4 py-2 rounded-lg" id="pageSelect">
+        
+    </select>
+    
+    <button class="nav-button text-white px-4 py-2 rounded-lg bg-gray-800 hover:bg-indigo-600 transition-colors" id="nextButton">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+    </button>
+</div>
+<script>
+// Theme handling functions
+function setTheme(theme) {
+  const body = document.body;
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  
+  if (theme === 'system') {
+    body.className = prefersDark ? 'theme-dark' : 'theme-light';
+  } else {
+    body.className = `theme-${theme}`;
+  }
+  
+  localStorage.setItem('theme', theme);
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme') || 'system';
+  setTheme(savedTheme);
+  document.getElementById('themeSelect').value = savedTheme;
+}
+
+// Reading mode functions  
+function setReadingMode(mode) {
+  const container = document.getElementById('mangaPages');
+  container.className = mode === 'webtoon' ? 'manga-pages-webtoon' 
+    : mode === 'rtl' ? 'manga-pages-rtl'
+    : 'space-y-6';
+    
+  localStorage.setItem('readingMode', mode);
+  
+  // Reset page select value when changing modes
+  const pageSelect = document.getElementById('pageSelect');
+  pageSelect.value = 0;
+  
+  // Force update progress bar
+  updateReadingProgress();
+}
+
+function initReadingMode() {
+  const savedMode = localStorage.getItem('readingMode') || 'scroll';
+  setReadingMode(savedMode);
+  document.getElementById('readingModeSelect').value = savedMode;
+}
+
+// Update progress bar based on scroll position
+function updateReadingProgress() {
+  const container = document.getElementById('readerContainer');
+  const readingMode = document.getElementById('readingModeSelect').value;
+  
+  if (readingMode === 'rtl') {
+    const maxScroll = container.scrollWidth - container.clientWidth;
+    const progress = (container.scrollLeft / maxScroll) * 100;
+    document.getElementById('readingProgress').style.width = `${progress}%`;
+  } else {
+    const maxScroll = container.scrollHeight - container.clientHeight; 
+    const progress = (container.scrollTop / maxScroll) * 100;
+    document.getElementById('readingProgress').style.width = `${progress}%`;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+  initReadingMode();
+  
+  // Theme select handler
+  document.getElementById('themeSelect').addEventListener('change', (e) => {
+    setTheme(e.target.value);
+  });
+
+  // Reading mode select handler  
+  document.getElementById('readingModeSelect').addEventListener('change', (e) => {
+    setReadingMode(e.target.value);
+  });
+
+  // Progress bar update on scroll
+  document.getElementById('readerContainer').addEventListener('scroll', () => {
+    updateReadingProgress();
+  });
+
+  // Watch for system theme changes
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (document.getElementById('themeSelect').value === 'system') {
+      setTheme('system');
+    }
+  });
+
+  // Settings panel toggle
+  document.getElementById('settingsToggle').addEventListener('click', () => {
+    const settingsPanel = document.getElementById('settingsPanel');
+    settingsPanel.classList.toggle('visible');
+  });
+
+  // Page navigation setup
+  const pageSelect = document.getElementById('pageSelect');
+  const prevButton = document.getElementById('prevButton');
+  const nextButton = document.getElementById('nextButton');
+  const mangaPages = document.querySelectorAll('.manga-page');
+
+  // Populate page select
+  for (let i = 0; i < mangaPages.length; i++) {
+    const option = document.createElement('option');
+    option.value = i;
+    option.textContent = `Page ${i + 1}`;
+    pageSelect.appendChild(option);
+  }
+
+  // Navigation functions
+  function goToPage(pageIndex) {
+    const page = mangaPages[pageIndex];
+    if (page) {
+      page.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      pageSelect.value = pageIndex;
+    }
+  }
+
+  prevButton.addEventListener('click', () => {
+    const currentPage = parseInt(pageSelect.value);
+    if (currentPage > 0) {
+      goToPage(currentPage - 1);
+    }
+  });
+
+  nextButton.addEventListener('click', () => {
+    const currentPage = parseInt(pageSelect.value);
+    if (currentPage < mangaPages.length - 1) {
+      goToPage(currentPage + 1);
+    }
+  });
+
+  pageSelect.addEventListener('change', (e) => {
+    goToPage(parseInt(e.target.value));
+  });
+
+  // Handle keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') {
+      prevButton.click();
+    } else if (e.key === 'ArrowRight') {
+      nextButton.click();
+    }
+  });
+});
+</script>
+</body></html>
