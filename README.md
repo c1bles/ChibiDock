@@ -6,7 +6,7 @@
 
 **Table of Contents**
 
-[TOC]
+[TOCM]
 
 # Setup
 ### Installation
