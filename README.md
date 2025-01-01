@@ -1,4 +1,3 @@
-wip readme, feel free to check it out tho!
 # ChibiDock
 
 ![](https://raw.githubusercontent.com/c1bles/ChibiDock/1664f800a718a7fa2bc736ad4fa2f6b017d0952d/ReadMe%20Stuff/chibidock%20logo256.svg)
