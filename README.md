@@ -3,11 +3,6 @@
 ![](https://raw.githubusercontent.com/c1bles/ChibiDock/1664f800a718a7fa2bc736ad4fa2f6b017d0952d/ReadMe%20Stuff/chibidock%20logo256.svg)
 ###### Simple Comic Reader Made In HTML For Comic Integration.
 ------------
-
-**Table of Contents**
-
-[TOCM]
-
 # Setup
 ### Installation
 The installation is simple, you just need to download the latest release from the releases tab, and open the .html file with any browser.
