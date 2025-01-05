@@ -1,0 +1,703 @@
+<html><head><base href="."><meta charset="UTF-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><title>ChibiDock</title><script src="https://cdn.tailwindcss.com"></script><style>
+:root {
+    --primary: #6366f1;
+    --bg-dark: #111827;
+    --bg-light: #f8fafc; /* Softer white background */
+    --card-dark: #1f2937;
+    --card-light: #ffffff;
+    --text-dark: #ffffff;
+    --text-light: #111827;
+    --manga-page-dark: #1f2937;
+    --manga-page-light: #f8fafc; /* Updated lighter background */
+    --accent: var(--primary);
+}
+
+.theme-dark {
+    --bg: var(--bg-dark);
+    --card: var(--card-dark);
+    --text: var(--text-dark);
+    --manga-page: var(--manga-page-dark);
+    background-color: var(--bg);
+    color: var(--text);
+}
+
+.theme-light {
+    --bg: var(--bg-light);
+    --card: var(--card-light);
+    --text: var(--text-light);
+    --manga-page: var(--manga-page-light);
+    background-color: var(--bg);
+    color: var(--text);
+}
+
+.manga-page {
+    background: var(--manga-page);
+    max-width: 800px;
+    margin: 0 auto;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.manga-page:hover {
+    transform: scale(1.02);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.chapter-nav {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--card);
+    padding: 12px 24px;
+    border-radius: 16px;
+    z-index: 1000;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+}
+
+.chapter-nav select {
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--text);
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+}
+
+.theme-light .chapter-nav {
+    background: var(--card);
+    color: var(--text);
+}
+
+.nav-button {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-light .nav-button {
+    background: #f1f5f9;
+    color: #111827;
+}
+
+.nav-button:hover {
+    transform: scale(1.1);
+    background: var(--primary);
+}
+
+.theme-light .nav-button:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.sidebar {
+    background: var(--card);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    height: 100vh;
+    z-index: 50;
+}
+
+.theme-light .sidebar {
+    border-right: 1px solid #e5e7eb;
+}
+
+.sidebar.collapsed {
+    transform: translateX(-100%);
+}
+
+.progress-bar {
+    height: 3px;
+    background: var(--primary);
+    position: fixed;
+    top: 0;
+    left: 0;
+    transition: width 0.3s ease;
+    z-index: 100;
+}
+
+.sidebar-toggle-fixed {
+    position: fixed;
+    left: 20px;
+    top: 20px;
+    z-index: 60;
+    background: var(--card);
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.theme-light .settings-toggle,
+.theme-light .sidebar-toggle-fixed {
+    background: #ffffff;
+    color: #111827;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.theme-light .settings-toggle:hover,
+.theme-light .sidebar-toggle-fixed:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.sidebar-toggle-fixed.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.sidebar-toggle-fixed:hover {
+    background: var(--primary);
+    transform: scale(1.1);
+}
+
+.settings-panel {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--card);
+    border-radius: 12px;
+    padding: 16px;
+    z-index: 1000;
+    width: 300px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transform: translateY(-150%);
+    transition: transform 0.3s ease;
+}
+
+.theme-light .settings-panel {
+    background: #ffffff;
+    color: #111827;
+}
+
+.theme-light .chapter-nav select {
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--text);
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+}
+
+.settings-panel.visible {
+    transform: translateY(0);
+}
+
+.settings-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1001;
+    background: var(--card);
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.settings-toggle:hover {
+    background: var(--primary);
+    transform: scale(1.1);
+}
+
+.manga-pages-webtoon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0 !important;
+    padding: 0 !important; 
+    margin: 0 !important; 
+}
+
+.manga-pages-webtoon .manga-page {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.manga-pages-rtl {
+    display: flex;
+    flex-direction: row-reverse;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 1.5rem;
+    padding: 1rem;
+    min-height: calc(100vh - 2rem);
+    align-items: center;
+}
+
+.manga-pages-rtl .manga-page {
+    scroll-snap-align: center;
+    flex: 0 0 auto;
+    width: auto; /* Remove fixed width */
+    max-width: min(800px, calc(100vw - 4rem)); /* Use max-width instead */
+    height: auto;
+    margin: 0 !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* Maintain same scale behavior as default mode */
+}
+
+.manga-pages-rtl .manga-page:hover {
+    transform: scale(1.02);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Ensure hover effect matches other modes */
+}
+
+.manga-pages-rtl .manga-page img {
+  width: 100%;
+  height: 100%;
+  max-width: 800px;
+  display: block;
+}
+
+.theme-light .sidebar .bg-gray-800 p,
+.theme-light .sidebar .bg-gray-100 p {
+    color: #111827; /* Dark text color for light mode */
+}
+
+.color-picker-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.color-preview {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: 2px solid currentColor;
+}
+
+.changelog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.changelog-content {
+    background: var(--card);
+    padding: 2rem;
+    border-radius: 1rem;
+    max-width: 500px;
+    width: 90%;
+}
+
+.manga-pages-ltr {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 1.5rem;
+    padding: 1rem;
+    min-height: calc(100vh - 2rem);
+    align-items: center;
+}
+
+.manga-pages-ltr .manga-page {
+    scroll-snap-align: center;
+    flex: 0 0 auto;
+    max-width: min(800px, calc(100vw - 4rem));
+    height: auto;
+    margin: 0 !important;
+}
+
+.version-tag {
+  background-color: var(--accent) !important;
+}
+
+.manga-title {
+  color: var(--accent) !important; 
+}
+
+#resetAccentColor:hover {
+    background: var(--accent) !important;
+    color: white !important;
+}
+
+#zoomSlider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+}
+
+#zoomSlider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: none;
+}
+
+.nav-button:hover {
+    background: var(--accent) !important;
+    color: white !important;
+}
+</style></head><body class="theme-dark bg-gray-900">
+<div class="progress-bar" id="readingProgress"></div>
+
+<!-- Settings Toggle Button -->
+<button id="settingsToggle" class="settings-toggle text-white p-2 rounded-lg bg-gray-800 hover:bg-indigo-600 transition-colors">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+    </svg>
+</button>
+
+<!-- Settings Panel -->
+<div id="settingsPanel" class="settings-panel">
+    <h3 class="text-xl font-bold mb-4">Settings</h3>
+    
+    <!-- Theme Toggle -->
+    <div class="mb-4">
+        <label class="text-sm font-medium mb-2 block">Theme</label>
+        <select id="themeSelect" class="w-full px-3 py-2 rounded-lg">
+            <option value="system">System</option>
+            <option value="dark">Dark</option>
+            <option value="light">Light (Broken)</option>
+        </select>
+    </div>
+
+    <!-- Reading Mode -->
+    <div class="mb-4">
+        <label class="text-sm font-medium mb-2 block">Reading Mode</label>
+        <select id="readingModeSelect" class="w-full px-3 py-2 rounded-lg">
+            <option value="scroll">Scroll (Default)</option>
+            <option value="webtoon">Webtoon</option>
+            <option value="ltr">Left to Right (Alpha)</option>
+            <option value="rtl">Right to Left (Alpha)</option>
+        </select>
+    </div>
+    
+    <div class="mb-4">
+        <label class="text-sm font-medium mb-2 block">Accent Color</label>
+        <div class="color-picker-wrapper">
+            <input type="color" id="accentColorPicker" class="w-24" value="#6366f1">
+            <div class="color-preview" id="colorPreview" style="background-color: #6366f1"></div>
+            <button id="resetAccentColor" class="px-2 py-1 bg-gray-800 text-white rounded transition-colors">
+                Reset
+            </button>
+        </div>
+    </div>
+    
+    <div class="mb-4">
+        <label class="text-sm font-medium mb-2 block">Zoom Level</label>
+        <input type="range" id="zoomSlider" min="50" max="200" value="100" class="w-full">
+        <div class="text-sm text-gray-400 mt-1">
+            Current zoom: <span id="zoomValue">100</span>%
+        </div>
+    </div>
+</div>
+
+<!-- Fixed Sidebar Toggle Button -->
+<button id="fixedSidebarToggle" class="sidebar-toggle-fixed text-white">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
+    </svg>
+</button>
+
+<div class="flex h-screen">
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar w-72 flex-shrink-0 overflow-y-auto">
+        <div class="p-6">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center space-x-2">
+                    <h1 class="text-2xl font-bold text-white tracking-tight">ChibiDock</h1>
+                    <span class="version-tag text-xs bg-indigo-600 text-white px-2 py-1 rounded-md">v1.1.0</span>
+                </div>
+                <button id="toggleSidebar" class="text-white hover:text-indigo-400 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="space-y-6">
+                <div class="bg-gray-800 p-4 rounded-xl shadow-lg">
+                    <h2 class="text-white font-semibold mb-3">Currently Reading</h2>
+                    <p class="manga-title text-xl text-indigo-400 font-medium">Incredible Comic</p>
+                    <p class="text-gray-400 text-sm mt-1">Chapter 3</p>
+                </div>
+                <div class="space-y-3">
+                    <h3 class="text-gray-400 text-sm font-medium uppercase tracking-wider">Chapters</h3>
+                    <div class="space-y-2">
+                        <a href="https://example.com/chapter/3" class="block text-white hover:bg-indigo-600 p-3 rounded-lg transition-colors">Chapter 3</a>
+                        <a href="https://example.com/chapter/2" class="block text-white hover:bg-indigo-600 p-3 rounded-lg transition-colors">Chapter 2</a>
+                        <a href="https://example.com/chapter/1" class="block text-white hover:bg-indigo-600 p-3 rounded-lg transition-colors">Chapter 1</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 reader-container ml-72 overflow-y-auto" id="readerContainer">
+        <div class="p-6">
+            <div class="space-y-6" id="mangaPages">
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="pages/001.jpg" alt="Page 1" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="pages/002.jpg" alt="Page 2" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="pages/003.jpg" alt="Page 3" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="pages/004.jpg" alt="Page 4" class="w-full h-auto">
+                </div>
+                <div class="manga-page bg-gray-800 rounded-xl overflow-hidden">
+                    <img src="pages/005.jpg" alt="Page 5" class="w-full h-auto">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="chapter-nav flex items-center space-x-4">
+    <button class="nav-button text-white px-4 py-2 rounded-lg bg-gray-800 hover:bg-indigo-600 transition-colors" id="prevButton">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+    </button>
+    
+    <select class="bg-gray-800 text-white px-4 py-2 rounded-lg" id="pageSelect">
+        
+    </select>
+    
+    <button class="nav-button text-white px-4 py-2 rounded-lg bg-gray-800 hover:bg-indigo-600 transition-colors" id="nextButton">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+    </button>
+</div>
+<div id="changelog" class="changelog">
+  <div class="changelog-content">
+    <h2 class="text-xl font-bold mb-4">What&apos;s New in 1.1.0?</h2>
+    <ul class="space-y-2">
+      <li>&#x2022; Added accent color customization</li>
+      <li>&#x2022; Added zoom controls</li> 
+      <li>&#x2022; Fixed left/right reading modes</li>
+      <li>&#x2022; Fixed theme switching</li>
+      <li>&#x2022; Added settings persistence</li>
+      <li>Check the Github for the full changelog!</li>
+    </ul>
+    <div class="mt-4 flex justify-between">
+      <button id="hideChangelog" class="bg-indigo-600 text-white px-4 py-2 rounded-lg">
+        Don&apos;t show again
+      </button>
+      <button id="closeChangelog" class="bg-gray-800 text-white px-4 py-2 rounded-lg">
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+<script>const settings = {
+  theme: localStorage.getItem('theme') || 'system',
+  readingMode: localStorage.getItem('readingMode') || 'scroll',
+  accentColor: localStorage.getItem('accentColor') || '#6366f1',
+  zoom: parseInt(localStorage.getItem('zoom')) || 100,
+  hideChangelog: localStorage.getItem('hideChangelog') === 'true'
+};
+function updateLocalStorage() {
+  Object.entries(settings).forEach(([key, value]) => {
+    localStorage.setItem(key, value);
+  });
+}
+function showChangelog() {
+  if (!settings.hideChangelog) {
+    document.getElementById('changelog').style.display = 'flex';
+  } else {
+    document.getElementById('changelog').style.display = 'none';
+  }
+}
+document.getElementById('hideChangelog').addEventListener('click', () => {
+  settings.hideChangelog = true;
+  updateLocalStorage();
+  document.getElementById('changelog').style.display = 'none';
+});
+document.getElementById('closeChangelog').addEventListener('click', () => {
+  document.getElementById('changelog').style.display = 'none';
+});
+const themeSelect = document.getElementById('themeSelect');
+themeSelect.value = settings.theme;
+function updateTheme(theme) {
+  settings.theme = theme;
+  const isDark = theme === 'dark' || theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  document.body.classList.toggle('theme-dark', isDark);
+  document.body.classList.toggle('theme-light', !isDark);
+  updateLocalStorage();
+}
+themeSelect.addEventListener('change', e => updateTheme(e.target.value));
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+  if (settings.theme === 'system') {
+    updateTheme('system');
+  }
+});
+const readingModeSelect = document.getElementById('readingModeSelect');
+readingModeSelect.innerHTML = `
+    <option value="scroll">Scroll (Default)</option>
+    <option value="webtoon">Webtoon</option>
+    <option value="ltr">Left to Right (Broken)</option>
+    <option value="rtl">Right to Left (Broken)</option>
+`;
+readingModeSelect.value = settings.readingMode;
+readingModeSelect.value = settings.readingMode;
+function updateReadingMode(mode) {
+  settings.readingMode = mode;
+  const container = document.getElementById('mangaPages');
+  container.className = '';
+  const mangaPages = document.querySelectorAll('.manga-page');
+  mangaPages.forEach(page => {
+    page.style.display = 'block';
+  });
+  switch (mode) {
+    case 'webtoon':
+      container.classList.add('manga-pages-webtoon');
+      break;
+    case 'rtl':
+      container.classList.add('manga-pages-rtl');
+      mangaPages.forEach((page, i) => {
+        page.style.display = i === document.getElementById('pageSelect').value - 1 ? 'block' : 'none';
+      });
+      break;
+    case 'ltr':
+      container.classList.add('manga-pages-ltr');
+      mangaPages.forEach((page, i) => {
+        page.style.display = i === document.getElementById('pageSelect').value - 1 ? 'block' : 'none';
+      });
+      break;
+    default:
+      container.classList.add('space-y-6');
+      break;
+  }
+  updateLocalStorage();
+}
+readingModeSelect.addEventListener('change', e => updateReadingMode(e.target.value));
+const zoomSlider = document.getElementById('zoomSlider');
+const zoomValue = document.getElementById('zoomValue');
+zoomSlider.value = settings.zoom;
+zoomValue.textContent = settings.zoom;
+function updateZoom(value) {
+  settings.zoom = value;
+  zoomValue.textContent = value;
+  document.getElementById('mangaPages').style.transform = `scale(${value / 100})`;
+  document.getElementById('mangaPages').style.transformOrigin = 'top center';
+  updateLocalStorage();
+}
+zoomSlider.addEventListener('input', e => updateZoom(e.target.value));
+const sidebar = document.getElementById('sidebar');
+const toggleSidebar = document.getElementById('toggleSidebar');
+const fixedSidebarToggle = document.getElementById('fixedSidebarToggle');
+const readerContainer = document.getElementById('readerContainer');
+function toggleSidebarVisibility() {
+  sidebar.classList.toggle('collapsed');
+  readerContainer.classList.toggle('ml-72');
+  readerContainer.classList.toggle('ml-0');
+  fixedSidebarToggle.classList.toggle('visible');
+}
+toggleSidebar.addEventListener('click', toggleSidebarVisibility);
+fixedSidebarToggle.addEventListener('click', toggleSidebarVisibility);
+const accentColorPicker = document.getElementById('accentColorPicker');
+const colorPreview = document.getElementById('colorPreview');
+accentColorPicker.value = settings.accentColor;
+colorPreview.style.backgroundColor = settings.accentColor;
+function updateAccentColor(color) {
+  document.documentElement.style.setProperty('--primary', color);
+  document.documentElement.style.setProperty('--accent', color);
+}
+accentColorPicker.addEventListener('input', e => {
+  const color = e.target.value;
+  settings.accentColor = color;
+  colorPreview.style.backgroundColor = color;
+  updateAccentColor(color);
+  updateLocalStorage();
+});
+const resetAccentColor = document.getElementById('resetAccentColor');
+const DEFAULT_ACCENT = '#6366f1';
+resetAccentColor.addEventListener('click', () => {
+  settings.accentColor = DEFAULT_ACCENT;
+  accentColorPicker.value = DEFAULT_ACCENT;
+  colorPreview.style.backgroundColor = DEFAULT_ACCENT;
+  updateAccentColor(DEFAULT_ACCENT);
+  updateLocalStorage();
+});
+const pageSelect = document.getElementById('pageSelect');
+const prevButton = document.getElementById('prevButton');
+const nextButton = document.getElementById('nextButton');
+const mangaPages = document.querySelectorAll('.manga-page');
+for (let i = 0; i < mangaPages.length; i++) {
+  mangaPages[i].style.display = 'none';
+  if (i === 0) {
+    mangaPages[i].style.display = 'block';
+  }
+}
+function goToPage(pageIndex) {
+  const mode = settings.readingMode;
+  if (mode === 'ltr' || mode === 'rtl') {
+    mangaPages.forEach((page, i) => {
+      page.style.display = i === pageIndex ? 'block' : 'none';
+    });
+  }
+  pageSelect.value = pageIndex + 1;
+  mangaPages[pageIndex].scrollIntoView({
+    behavior: 'smooth',
+    block: 'nearest'
+  });
+}
+prevButton.addEventListener('click', () => {
+  const currentPageIndex = pageSelect.value - 1;
+  if (currentPageIndex > 0) {
+    goToPage(currentPageIndex - 1);
+  }
+});
+nextButton.addEventListener('click', () => {
+  const currentPageIndex = pageSelect.value - 1;
+  if (currentPageIndex < mangaPages.length - 1) {
+    goToPage(currentPageIndex + 1);
+  }
+});
+pageSelect.addEventListener('change', e => {
+  goToPage(e.target.value - 1);
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') {
+    prevButton.click();
+  } else if (e.key === 'ArrowRight') {
+    nextButton.click();
+  }
+});
+document.addEventListener('DOMContentLoaded', () => {
+  showChangelog();
+  updateTheme(settings.theme);
+  updateReadingMode(settings.readingMode);
+  updateZoom(settings.zoom);
+  updateAccentColor(settings.accentColor);
+  for (let i = 0; i < mangaPages.length; i++) {
+    const option = document.createElement('option');
+    option.value = i + 1;
+    option.textContent = `Page ${i + 1}`;
+    pageSelect.appendChild(option);
+  }
+  pageSelect.value = 1;
+  const mode = settings.readingMode;
+  if (mode === 'scroll' || mode === 'webtoon') {
+    mangaPages.forEach(page => page.style.display = 'block');
+  } else {
+    goToPage(0);
+  }
+});
+document.getElementById('settingsToggle').addEventListener('click', () => {
+  const settingsPanel = document.getElementById('settingsPanel');
+  settingsPanel.classList.toggle('visible');
+});</script>
+</body></html>
