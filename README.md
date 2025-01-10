@@ -23,7 +23,8 @@ For the reading modes it's more complicated than the themes process because you 
 ### UI
 If you know how to code well enough, you could redesign the whole ui to your taste. I'm not gonna do a tutorial since this is a lot but you get the point.
 # Compatibility 📺
-I haven't tried this on non-built browsers and mobile devices, so there might be some compatibility issues at the moment;
+As of 1.1.0a, i added minimal compatibility for mobile devices, although this is really nothing. (tested on "xiaomi-sweet_k6a")
+I still didn't test this on a tablet or a square monitor so i don't know about those.
 # License 🔑
 
     Copyright 2025 c1bles/cibles
